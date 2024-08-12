@@ -1,6 +1,6 @@
 <div class="mt-4 mb-5">
     <h3>Đăng nhập</h3>
-    <form method="POST" action="/auth/login">
+    <form id="loginForm" method="POST" action="/auth/login">
         <div class="mb-3">
             <label for="phone" class="form-label">Số điện thoại</label>
             <input type="text" class="form-control" id="phone" name="phone">
@@ -11,4 +11,25 @@
         </div>
         <button type="submit" class="btn btn-primary">Đăng nhập</button>
     </form>
+    <br>
+    <p>Bạn chưa có tài khoản? <a href="/auth/register">Đăng ký</a></p>
 </div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            this.submit();
+            return;
+        }
+        //Trường ẩn
+        document.getElementById('token').value = token;
+        
+        const headers = new Headers();
+        headers.append('Authorization', `Bearer ${token}`);
+        
+        this.submit();
+    });
+</script>

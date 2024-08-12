@@ -1,13 +1,14 @@
 <nav class="navbar bg-dark  navbar-expand-lg" data-bs-theme="dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Bánh Tầm Bì</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="/">Bánh Tầm Bì</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse ms-5" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Trang chủ</a>
+          <a class="nav-link active" aria-current="page" href="/">Trang chủ</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" href="#">Món chính</a>
@@ -18,15 +19,21 @@
         <li class="nav-item">
           <a class="nav-link active" href="#">Nước uống</a>
         </li>
+        <li class="nav-item ms-5">
+          <a class="nav-link active" href="#">Giỏ hàng</a>
+        </li>
         <li class="nav-item dropdown ms-5">
-          <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Thông tin tài khoản
+          <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Tài khoản
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Thông tin liên lạc</a></li>
+            {{!-- <li><a class="dropdown-item" href="#">Thông tin liên lạc</a></li>
             <li><a class="dropdown-item" href="#">Đơn hàng của tôi</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Đăng xuất</a></li> --}}
           </ul>
         </li>
       </ul>
@@ -37,26 +44,50 @@
     </div>
   </div>
 </nav>
+<input type="text" id="hiddenInput" value="{{ data.isAdmin }}" hidden>
 
 <script>
-  // Assume loggedIn is a boolean indicating if the user is logged in or not
-const loggedIn = true; // You need to replace this with your actual login status
+  const userIsAdmin = document.getElementById('hiddenInput').value;
+  //console.log(typeof userIsAdmin)
+  const dropdownMenu = document.querySelector(
+    ".nav-item.dropdown .dropdown-menu"
+  );
 
-const dropdownMenu = document.querySelector('.nav-item.dropdown .dropdown-menu');
-
-if (loggedIn) {
-    // Change the content of dropdown items if user is logged in
+  if (userIsAdmin == "false") {
     dropdownMenu.innerHTML = `
         <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
         <li><a class="dropdown-item" href="#">Đơn hàng của tôi</a></li>
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#">Thoát</a></li>
+        <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
     `;
-} else {
-    // Change the content of dropdown items if user is not logged in
+  } else if (userIsAdmin == "true") {
+    // Xác định phần danh sách các menu
+    var menuItems = document.querySelector(".navbar-nav");
+
+    // Lọc và xóa tất cả các thẻ <li> ngoại trừ <li> của Tài khoản
+    Array.from(menuItems.children).forEach(function (item) {
+      if (!item.classList.contains("dropdown")) {
+        item.remove();
+      }
+    });
+
     dropdownMenu.innerHTML = `
-        <li><a class="dropdown-item" href="#">Đăng nhập</a></li>
-        <li><a class="dropdown-item" href="#">Đăng ký</a></li>
+        <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="/auth/logout">Đăng xuất</a></li>
     `;
-}
+
+    // Gán lại sự kiện click cho các liên kết sau khi thay đổi nội dung
+    const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function(event) {
+            window.location.href = this.getAttribute('href');
+        });
+    });
+  } else {
+    dropdownMenu.innerHTML = `
+        <li><a class="dropdown-item" href="/auth/login">Đăng nhập</a></li>
+        <li><a class="dropdown-item" href="/auth/register">Đăng ký</a></li>
+    `;
+  }
 </script>

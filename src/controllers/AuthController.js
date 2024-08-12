@@ -47,6 +47,7 @@ module.exports = {
         const user = await User.findOne({ phone: req.body.phone });
         !user && res.status(401).json("Wrong Login Details");
 
+
         const deCryptedPass = CryptoJS.AES.decrypt(
             user.password,
             process.env.Crypto_SEC
@@ -55,20 +56,28 @@ module.exports = {
         const dePassword = deCryptedPass.toString(CryptoJS.enc.Utf8);
         dePassword !== req.body.password && res.status(401).json("Wrong Login Details");
 
-        // const userToken = jwt.sign(
-        //     {
-        //         id: user._id,
-        //         isAdmin: user.isAdmin
-        //     },
-        //     process.env.JWT_SEC,
-        //     {
-        //         expiresIn: process.env.JWT_EXPIRE
-        //     }
-        // )
 
-        res.redirect("/")
+        const userToken = jwt.sign(
+            {
+                id: user._id,
+                isAdmin: user.isAdmin
+            },
+            process.env.JWT_SEC,
+            {
+                expiresIn: 900
+            }
+        )
+
+        console.log(process.env.JWT_EXPIRE, "jwtsec:", process.env.JWT_SEC, "usetoken: ", userToken)
+        localStorage.setItem('token', userToken)
+
+        res.status(200).json("Success");
     } catch (error){
-
+      res.status(500).json(error);
     }
+  },
+
+  logout: (req, res) => {
+    res.render("auth/login");
   }
 };
