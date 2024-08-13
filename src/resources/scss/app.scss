@@ -161,3 +161,13 @@
     font-weight:600
   }
 }
+
+.checkbox-select-all-options{
+  width: 120px;
+}
+
+.max-width-td {
+  max-width: 500px; /* Giới hạn chiều rộng tối đa là 200px */
+  overflow: hidden; /* Ẩn nội dung dư thừa nếu vượt quá giới hạn */
+  text-overflow: ellipsis; /* Hiển thị dấu chấm (...) nếu nội dung quá giới hạn */
+}

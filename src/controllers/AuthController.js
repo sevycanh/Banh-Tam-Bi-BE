@@ -68,16 +68,22 @@ module.exports = {
             }
         )
 
-        console.log(process.env.JWT_EXPIRE, "jwtsec:", process.env.JWT_SEC, "usetoken: ", userToken)
+        // console.log(process.env.JWT_EXPIRE, "jwtsec:", process.env.JWT_SEC, "usetoken: ", userToken)
         localStorage.setItem('token', userToken)
 
-        res.status(200).json("Success");
+        // res.render("home/home", {
+        //   data: {
+        //     isAdmin: user.isAdmin
+        //   }
+        // });
+        res.redirect("/")
     } catch (error){
-      res.status(500).json(error);
+      res.status(500).json("Lỗi login");
     }
   },
 
   logout: (req, res) => {
-    res.render("auth/login");
+    localStorage.removeItem('token')
+    res.redirect("/auth/login");
   }
 };

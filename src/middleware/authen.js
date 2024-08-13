@@ -9,7 +9,11 @@ module.exports = {
     const token = localStorage.getItem("token");
     
     if (!token) {
-      next();
+      res.render("home/home", {
+        data: {
+          isAdmin: -1,
+        },
+      });
     } else {
       jwt.verify(token, process.env.JWT_SEC, (err, data) => {
         if (err){

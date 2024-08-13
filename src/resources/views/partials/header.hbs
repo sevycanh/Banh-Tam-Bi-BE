@@ -10,7 +10,7 @@
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="/">Trang chủ</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item ms-3">
           <a class="nav-link active" href="#">Món chính</a>
         </li>
         <li class="nav-item">
@@ -22,7 +22,7 @@
         <li class="nav-item ms-5">
           <a class="nav-link active" href="#">Giỏ hàng</a>
         </li>
-        <li class="nav-item dropdown ms-5">
+        <li class="nav-item dropdown ms-5 me-5">
           <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">
             Tài khoản
@@ -44,7 +44,7 @@
     </div>
   </div>
 </nav>
-<input type="text" id="hiddenInput" value="{{ data.isAdmin }}" hidden>
+<input type="text" id="hiddenInput" value="{{ data.isAdmin }}" placeholder="isAdmin" hidden>
 
 <script>
   const userIsAdmin = document.getElementById('hiddenInput').value;
@@ -58,9 +58,14 @@
         <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
         <li><a class="dropdown-item" href="#">Đơn hàng của tôi</a></li>
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+        <li><a class="dropdown-item" href="/auth/logout">Đăng xuất</a></li>
     `;
   } else if (userIsAdmin == "true") {
+
+    //Xóa form tìm kiếm
+    const form = document.querySelector('.d-flex');
+    form.innerHTML = ``
+
     // Xác định phần danh sách các menu
     var menuItems = document.querySelector(".navbar-nav");
 
@@ -77,13 +82,28 @@
         <li><a class="dropdown-item" href="/auth/logout">Đăng xuất</a></li>
     `;
 
-    // Gán lại sự kiện click cho các liên kết sau khi thay đổi nội dung
-    const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
-    dropdownItems.forEach(item => {
-        item.addEventListener('click', function(event) {
-            window.location.href = this.getAttribute('href');
-        });
+    // Lấy phần tử <ul> chứa các mục menu
+    const menuUl = document.querySelector('.collapse#navbarSupportedContent ul.navbar-nav');
+    // Tạo một mảng chứa các thông tin của các mục menu mới
+    const newMenuItems = [
+      { text: 'Quản lý sản phẩm', link: '/products' },
+      { text: 'Quản lý đơn hàng', link: '#' },
+      { text: 'Quản lý tài khoản', link: '#' }
+    ];
+    // Duyệt qua mảng mới và thêm các mục vào danh sách menu
+    newMenuItems.forEach(item => {
+      const newLi = document.createElement('li');
+      newLi.classList.add('nav-item');
+
+      const newLink = document.createElement('a');
+      newLink.classList.add('nav-link', 'active');
+      newLink.href = item.link;
+      newLink.textContent = item.text;
+
+      newLi.appendChild(newLink);
+      menuUl.appendChild(newLi);
     });
+
   } else {
     dropdownMenu.innerHTML = `
         <li><a class="dropdown-item" href="/auth/login">Đăng nhập</a></li>
