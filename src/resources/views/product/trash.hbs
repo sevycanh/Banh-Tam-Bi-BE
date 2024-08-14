@@ -1,14 +1,18 @@
-<div class="mt-4">
+<form class="mt-4" method="POST" action="/products/resume-selling-products">
     <div>
         <h3>Sản phẩm đã ngừng bán</h3>
         <a href="/products">Xem sản phẩm hiện có</a>
+
+        <div class="mt-4">
+            <button id="btn-resume" type="submit" class="btn btn-primary disabled">Bán lại các món đã chọn</button>
+        </div>
     </div>
     <table class="table mt-4">
         <thead>
             <tr>
                 <th scope="col" colspan="1">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+                        <input class="form-check-input" type="checkbox" value="" id="checkbox-all" title="Chọn tất cả">
                     </div>
                 </th>
                 <th scope="col">Tên sản phẩm</th>
@@ -24,7 +28,7 @@
             <tr>
                 <td>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="productsIds[]" value="{{this._id}}" id="">
+                        <input class="form-check-input" type="checkbox" name="productsIds" value="{{this._id}}" id="" title="Nhấn chọn">
                     </div>
                 </td>
                 <td>{{this.name}}</td>
@@ -35,24 +39,24 @@
                 <td>
                     <a href="" class="btn btn-link btn-restore" data-id="{{this._id}}">Khôi phục</a>
                     {{!-- <a href="" class="btn btn-link" data-bs-toggle="modal" data-id="{{this._id}}"
-                        data-bs-target="#delete-course-model">Xóa</a> --}}
-                    <button onclick="deleteCourse(this)" data-id="{{this._id}}" data-bs-toggle="modal"
-                        data-bs-target="#delete-course-model" type="button" class="btn btn-link">Xóa vĩnh viễn</button>
+                        data-bs-target="#delete-product-model">Xóa</a> --}}
+                    <button onclick="deleteProduct(this)" data-id="{{this._id}}" data-bs-toggle="modal"
+                        data-bs-target="#delete-product-model" type="button" class="btn btn-link">Xóa vĩnh viễn</button>
                 </td>
             </tr>
             {{else}}
             <tr>
-                <td colspan="5" class="text-center">
+                <td colspan="7" class="text-center">
                     Bạn chưa dừng bán món nào!
                 </td>
             </tr>
             {{/each}}
         </tbody>
     </table>
-</div>
+</form>
 
-{{!-- Confirm delete course --}}
-<div id="delete-course-model" class="modal" tabindex="-1">
+{{!-- Confirm delete product --}}
+<div id="delete-product-model" class="modal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -60,24 +64,27 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Bạn có chắc chắn muốn xóa vĩnh viễn khóa học này?</p>
+                <p>Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm này?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button id="btn-delete-course" onclick="navigate()" type="button" class="btn btn-danger">Accept</button>
+                <button id="btn-delete-product" onclick="navigate()" type="button" class="btn btn-danger">Accept</button>
             </div>
         </div>
     </div>
 </div>
 
-<form name="delete-course-form" method="POST"></form>
-<form name="restore-course-form" method="POST"></form>
+<form name="delete-product-form" method="POST"></form>
+<form name="restore-product-form" method="POST"></form>
 
 <script>
-    var courseId;
-    var btnDeleteCourse = document.getElementById('btn-delete-course')
-    var deleteForm = document.forms['delete-course-form'];
-    var restoreForm = document.forms['restore-course-form'];
+    var productId;
+    var btnDeleteProduct = document.getElementById('btn-delete-product')
+    var deleteForm = document.forms['delete-product-form'];
+    var restoreForm = document.forms['restore-product-form'];
+    var checkboxAll = document.getElementById('checkbox-all')
+    var productItemCheckbox = document.querySelectorAll('input[name="productsIds"]')
+    var resumeSellingBtn = document.getElementById('btn-resume')
     
     // Lấy ra tất cả các thẻ <a> có class "btn-restore" trong <div class="mt-4">
     const btnRestoreLinks = document.querySelectorAll('.mt-4 a.btn-restore');
@@ -89,22 +96,57 @@
             // Lấy giá trị của thuộc tính data-id
         const dataId = this.getAttribute('data-id');
         
-        restoreForm.action = '/courses/' + dataId + '/restore?_method=PATCH';
+        restoreForm.action = '/products/' + dataId + '/restore?_method=PATCH';
         restoreForm.submit();
         });
     });
 
-    function deleteCourse(element) {
-        courseId = element.getAttribute('data-id')
+    function deleteProduct(element) {
+        productId = element.getAttribute('data-id')
     }
     /**
     function navigate() {
         window.location.href = "/"
     }*/
 
-    btnDeleteCourse.onclick = function () {
-        deleteForm.action = '/courses/' + courseId + '/force?_method=DELETE';
+    btnDeleteProduct.onclick = function () {
+        deleteForm.action = '/products/' + productId + '/destroy?_method=DELETE';
         deleteForm.submit();
+    }
+
+    checkboxAll.onchange = function () {
+        if (checkboxAll.checked) {
+            productItemCheckbox.forEach((checkbox) => {
+                checkbox.checked = true
+            })
+        } else {
+            productItemCheckbox.forEach((checkbox) => {
+                checkbox.checked = false
+            })
+        }
+        renderResumeSellingBtn()
+    }
+
+    productItemCheckbox.forEach((checkbox) => {
+        checkbox.onchange = function () {
+            var allChecked = Array.from(productItemCheckbox).every(checkbox => checkbox.checked);
+            checkboxAll.checked = allChecked;
+            renderResumeSellingBtn()
+        };
+    });
+
+    function renderResumeSellingBtn() {
+        var countChecked = 0;
+        productItemCheckbox.forEach(checkbox => {
+            if (checkbox.checked) {
+                countChecked++;
+            }
+        });
+        if (countChecked > 0) {
+            resumeSellingBtn.classList.remove('disabled')
+        } else {
+            resumeSellingBtn.classList.add('disabled')
+        }
     }
 
 </script>

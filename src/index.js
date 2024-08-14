@@ -20,7 +20,7 @@ app.engine(
     helpers: {
       sum: (a, b) => a + b,
     },
-  })
+  }),
 );
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "resources", "views"));

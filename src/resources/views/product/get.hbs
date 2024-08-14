@@ -1,19 +1,12 @@
-<form class="mt-4" method="POST" action="/products/handle-form-actions">
+<form class="mt-4" method="POST" action="/products/stop-selling-products">
     <div>
         <h3>Sản phẩm đang bán</h3>
         <a href="/products/create">Thêm sản phẩm mới</a>
         <br>
         <a href="/products/trash">Xem sản phẩm đã hết ({{productsSortDeleted}})</a>
 
-        <div class="mt-4 d-flex align-items-center">
-            <select class="form-select form-select-sm checkbox-select-all-options ms-3 me-3" name="action" required
-                aria-label="Default select example">
-                <option selected value="">Chọn hành động</option>
-                <option value="delete">Xóa</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-            </select>
-            <button id="btn-submit" type="submit" class="btn btn-primary disabled">Thực hiện</button>
+        <div class="mt-4">
+            <button id="btn-stop" type="submit" class="btn btn-primary disabled">Dừng bán các món đã chọn</button>
         </div>
     </div>
     <table class="table mt-4">
@@ -37,7 +30,7 @@
             <tr>
                 <td>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="productsIds[]" value="{{this._id}}" id="">
+                        <input class="form-check-input" type="checkbox" name="productsIds" value="{{this._id}}" id="">
                     </div>
                 </td>
                 <td>{{this.name}}</td>
@@ -90,8 +83,8 @@
     var btnDeleteProduct = document.getElementById('btn-delete-product')
     var deleteForm = document.forms['delete-product-form'];
     var checkboxAll = document.getElementById('checkbox-all')
-    var productItemCheckbox = document.querySelectorAll('input[name="productsIds[]"]')
-    var submitBtn = document.getElementById('btn-submit')
+    var productItemCheckbox = document.querySelectorAll('input[name="productsIds"]')
+    var stopSellingBtn = document.getElementById('btn-stop')
 
     function deleteProduct(element) {
         productId = element.getAttribute('data-id')
@@ -104,6 +97,41 @@
     btnDeleteProduct.onclick = function () {
         deleteForm.action = '/products/' + productId + '?_method=DELETE';
         deleteForm.submit();
+    }
+
+    checkboxAll.onchange = function () {
+        if (checkboxAll.checked) {
+            productItemCheckbox.forEach((checkbox) => {
+                checkbox.checked = true
+            })
+        } else {
+            productItemCheckbox.forEach((checkbox) => {
+                checkbox.checked = false
+            })
+        }
+        renderStopSellingBtn()
+    }
+
+    productItemCheckbox.forEach((checkbox) => {
+        checkbox.onchange = function () {
+            var allChecked = Array.from(productItemCheckbox).every(checkbox => checkbox.checked);
+            checkboxAll.checked = allChecked;
+            renderStopSellingBtn()
+        };
+    });
+
+    function renderStopSellingBtn() {
+        var countChecked = 0;
+        productItemCheckbox.forEach(checkbox => {
+            if (checkbox.checked) {
+                countChecked++;
+            }
+        });
+        if (countChecked > 0) {
+            stopSellingBtn.classList.remove('disabled')
+        } else {
+            stopSellingBtn.classList.add('disabled')
+        }
     }
 
 </script>

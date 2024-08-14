@@ -1,5 +1,8 @@
 const Product = require("../models/Product");
-const { multipleMongooseToObject } = require("../util/mongoose");
+const {
+  multipleMongooseToObject,
+  mongooseToObject,
+} = require("../util/mongoose");
 
 module.exports = {
   getAllProduct: async (req, res) => {
@@ -10,50 +13,91 @@ module.exports = {
       });
       res.render("product/get", {
         data: {
-          isAdmin: true
+          isAdmin: true,
         },
         products: multipleMongooseToObject(products),
-        productsSortDeleted
-      })
+        productsSortDeleted,
+      });
     } catch (error) {
       res.status(500).json("Lỗi get all product");
     }
   },
 
   createProductPage: (req, res) => {
-    res.render('product/create', {
+    res.render("product/create", {
       data: {
-        isAdmin: true
-      }
-    })
+        isAdmin: true,
+      },
+    });
   },
 
   createProduct: async (req, res) => {
-    const newProduct = new Product(req.body)
+    const newProduct = new Product(req.body);
     try {
       await newProduct.save();
-      res.redirect("/products")
+      res.redirect("/products");
     } catch (error) {
-      res.status(500).json("Lỗi tạo sản phẩm")
+      res.status(500).json("Lỗi tạo sản phẩm");
     }
   },
 
   stopSellingProduct: (req, res) => {
     Product.delete({ _id: req.params.id })
       .then(() => res.redirect("back"))
-      .catch(()=> res.status(500).json("Lỗi dừng bán sản phẩm"));
+      .catch(() => res.status(500).json("Lỗi dừng bán sản phẩm"));
   },
 
   getTrash: (req, res) => {
     Product.findWithDeleted({ deleted: true })
       .then((products) =>
-        res.render("product/trash", { 
+        res.render("product/trash", {
           data: {
-            isAdmin: true
+            isAdmin: true,
           },
-          products: multipleMongooseToObject(products) })
+          products: multipleMongooseToObject(products),
+        })
       )
-      .catch(()=> res.status(500).json("Lỗi lấy sản phẩm dừng bán"));
-  }
+      .catch(() => res.status(500).json("Lỗi lấy sản phẩm dừng bán"));
+  },
 
+  restoreProduct: (req, res) => {
+    Product.restore({ _id: req.params.id })
+      .then(() => res.redirect("back"))
+      .catch(() => res.status(500).json("Lỗi restore sản phẩm"));
+  },
+
+  destroyProduct: (req, res) => {
+    Product.deleteOne({ _id: req.params.id })
+      .then(() => res.redirect("back"))
+      .catch(() => res.status(500).json("Lỗi xóa sản phẩm"));
+  },
+
+  editPage: (req, res) => {
+    Product.findOne({ _id: req.params.id }).then((product) =>
+      res.render("product/update", {
+        data: {
+          isAdmin: true,
+        },
+        product: mongooseToObject(product),
+      })
+    );
+  },
+
+  editProduct: (req, res) => {
+    Product.updateOne({ _id: req.params.id }, req.body)
+      .then(() => res.redirect("/products"))
+      .catch(() => res.status(500).json("Lỗi sửa sản phẩm"));
+  },
+
+  stopProductsIsChecked: (req, res) => {
+    Product.delete({ _id: { $in: req.body.productsIds } })
+      .then(() => res.redirect("back"))
+      .catch(() => res.status(500).json("Lỗi dừng bán các sản phẩm đã chọn"));
+  },
+
+  resumeProductsIsChecked: (req, res) => {
+    Product.restore({ _id: { $in: req.body.productsIds } })
+      .then(() => res.redirect("back"))
+      .catch(() => res.status(500).json("Lỗi dừng bán các sản phẩm đã chọn"));
+  },
 };
