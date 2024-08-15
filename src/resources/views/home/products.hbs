@@ -1,0 +1,36 @@
+<div class="mt-4">
+    <div class="mb-3">
+        <h1 id="title-category"></h1>
+    </div>
+    <div class="row">
+        {{#each products}}
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-course-item mb-4">
+                <a href="/products/{{this.slug}}">
+                <img src="{{this.image}}" class="card-img-top" alt="{{this.name}}">
+                </a>
+                <div class="card-body">
+                    <a href="/products/{{this.slug}}">
+                        <h5 class="card-title">{{this.name}}</h5>
+                    </a>
+                    <p class="card-text red-text">{{this.price}}</p>
+                    <a href="#" class="btn btn-primary">Đặt món</a>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
+
+<script>
+    const categoryId = "{{categoryId}}"
+    const title = document.getElementById('title-category')
+
+    if (categoryId === "1"){
+        title.innerHTML= `Món chính`
+    } else if (categoryId === "2"){
+        title.innerHTML = `Món phụ`
+    } else {
+        title.innerHTML = `Nước uống`
+    }
+</script>

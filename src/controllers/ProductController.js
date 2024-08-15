@@ -100,4 +100,49 @@ module.exports = {
       .then(() => res.redirect("back"))
       .catch(() => res.status(500).json("Lỗi dừng bán các sản phẩm đã chọn"));
   },
+
+  getMonChinh: (req, res) => {
+    getProductsByCategoryId(req, res, "1");
+  },
+
+  getMonPhu: (req, res) => {
+    getProductsByCategoryId(req, res, "2");
+  },
+
+  getNuocUong: (req, res) => {
+    getProductsByCategoryId(req, res, "3");
+  },
+
+  showInfoProduct: (req, res) => {
+    Product.findOne({ slug: req.params.slug })
+      .then((product) => {
+        res.render("product/show", {
+          product: mongooseToObject(product),
+          data: {
+            isAdmin:
+              req.data && req.data.isAdmin !== undefined
+                ? req.data.isAdmin
+                : -1,
+          },
+        });
+      })
+      .catch(() => res.status(500).json("Lỗi show thông tin sản phẩm"));
+  },
+};
+
+const getProductsByCategoryId = (req, res, categoryId) => {
+  Product.find({ categoryId: categoryId })
+    .then((products) => {
+      res.render("home/products", {
+        products: multipleMongooseToObject(products),
+        categoryId: categoryId,
+        data: {
+          isAdmin:
+            req.data && req.data.isAdmin !== undefined ? req.data.isAdmin : -1,
+        },
+      });
+    })
+    .catch(() => {
+      res.status(500).json("Lỗi lấy sản phẩm");
+    });
 };

@@ -1,0 +1,62 @@
+<div class="mt-4">
+    <div class="mb-3 row">
+        <div class="col-lg-7">
+            <img src="{{product.image}}" alt="">
+        </div>
+        <div class="col-lg-5">
+            <h1>{{product.name}}</h1>
+            <h3 class="red-text">{{product.price}}đ</h3>
+            <h5>Mô tả:</h5>
+            <p>{{product.description}}</p>
+            <div class="mb-5">
+                <input type="button" value="-" onclick="minusQuantity()" class="qty-btn">
+                <input type="text" id="quantity" name="quantity" value="1" min="1" max="50" class="center-input"
+                    style="width: 50px;" disabled>
+                <input type="button" value="+" onclick="plusQuantity()" class="qty-btn">
+            </div>
+            <button onclick="saveToCookies()" class="btn btn-primary mb-5">Đặt món</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function plusQuantity() {
+        var quantityInput = document.getElementById("quantity");
+        var currentValue = parseInt(quantityInput.value);
+        if (currentValue < parseInt(quantityInput.getAttribute("max"))) {
+            quantityInput.value = currentValue + 1;
+        }
+    }
+
+    function minusQuantity() {
+        var quantityInput = document.getElementById("quantity");
+        var currentValue = parseInt(quantityInput.value);
+
+        if (currentValue > parseInt(quantityInput.getAttribute("min"))) {
+            quantityInput.value = currentValue - 1;
+        }
+    }
+
+    function saveToCookies() {
+        var productId = "{{product._id}}";
+        var quantity = parseInt(document.getElementById("quantity").value);
+
+        var existingProducts = JSON.parse(getCookie('products') || '[]');
+
+        // Kiểm tra nếu sản phẩm đã tồn tại trong danh sách thì cập nhật số lượng, ngược lại thêm sản phẩm mới
+        var productIndex = existingProducts.findIndex(item => item.productId === productId);
+        if (productIndex !== -1) {
+            existingProducts[productIndex].quantity += quantity;
+        } else {
+            existingProducts.push({ productId: productId, quantity: quantity });
+        }
+
+        document.cookie = 'products=' + JSON.stringify(existingProducts) + ';max-age=86400;path=/'; 
+        alert('Đã thêm vào giỏ hàng');
+    }
+
+    function getCookie(name) {
+        const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return cookieValue ? cookieValue.pop() : '';
+    }
+</script>

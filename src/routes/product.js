@@ -1,6 +1,7 @@
 const express = require('express');
 const ProductController = require('../controllers/ProductController');
 const verifyToken = require('../middleware/verifyToken');
+const { verifyForHeader } = require('../middleware/authen');
 const router = express.Router();
 
 router.put("/:id", ProductController.editProduct)
@@ -17,6 +18,11 @@ router.delete("/:id", ProductController.stopSellingProduct)
 //stop product is checked
 router.post("/stop-selling-products", ProductController.stopProductsIsChecked)
 router.post("/resume-selling-products", ProductController.resumeProductsIsChecked)
+
+router.get("/mon-chinh", verifyForHeader, ProductController.getMonChinh)
+router.get("/mon-phu", verifyForHeader, ProductController.getMonPhu)
+router.get("/nuoc-uong",verifyForHeader, ProductController.getNuocUong)
+router.get("/:slug", verifyForHeader, ProductController.showInfoProduct)
 
 router.get("/", ProductController.getAllProduct)
 

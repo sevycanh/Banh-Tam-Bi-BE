@@ -5,6 +5,7 @@ const db = require("./config/database");
 const route = require("./routes/api");
 const methodOverride = require("method-override");
 require("dotenv").config();
+var cookieParser = require('cookie-parser')
 
 //Connect to database
 db.connect();
@@ -37,6 +38,8 @@ app.use(
 app.use(express.json()); //req
 
 app.use(methodOverride("_method"));
+
+app.use(cookieParser())
 
 route(app);
 
