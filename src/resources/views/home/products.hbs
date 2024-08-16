@@ -14,7 +14,7 @@
                         <h5 class="card-title">{{this.name}}</h5>
                     </a>
                     <p class="card-text red-text">{{this.price}}</p>
-                    <a href="#" class="btn btn-primary">Đặt món</a>
+                    <button onclick="saveToCookies('{{this._id}}')" class="btn btn-primary">Đặt nhanh</button>
                 </div>
             </div>
         </div>
@@ -32,5 +32,27 @@
         title.innerHTML = `Món phụ`
     } else {
         title.innerHTML = `Nước uống`
+    }
+
+    function saveToCookies(productId) {
+        var quantity = 1;
+
+        var existingProducts = JSON.parse(getCookie('products') || '[]');
+
+        // Kiểm tra nếu sản phẩm đã tồn tại trong danh sách thì cập nhật số lượng, ngược lại thêm sản phẩm mới
+        var productIndex = existingProducts.findIndex(item => item.productId === productId);
+        if (productIndex !== -1) {
+            existingProducts[productIndex].quantity += quantity;
+        } else {
+            existingProducts.push({ productId: productId, quantity: quantity });
+        }
+
+        document.cookie = 'products=' + JSON.stringify(existingProducts) + ';max-age=86400;path=/'; 
+        alert('Đã thêm vào giỏ hàng');
+    }
+
+    function getCookie(name) {
+        const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return cookieValue ? cookieValue.pop() : '';
     }
 </script>

@@ -1,0 +1,87 @@
+<link rel="stylesheet" href="/css/cart.css">
+<div class="card">
+    <div class="row">
+        <div class="col-md-8 cart">
+            <div class="title">
+                <div class="row">
+                    <div class="col">
+                        <h4><b>Giỏ hàng</b></h4>
+                    </div>
+                </div>
+            </div>
+            {{#each cartProducts}}
+            <div class="row border-top border-bottom">
+                <div class="row main align-items-center">
+                    <div class="col-2"><img class="img-fluid" src="{{this.image}}"></div>
+                    <div class="col">
+                        <div class="row">{{this.name}}</div>
+                        <div class="row red-text">{{this.price}}đ</div>
+                    </div>
+                    <div class="col ms-5">
+                        <input type="button" value="-" onclick="minusQuantity('{{this._id}}')" class="qty-btn">
+                        <input type="text" id="quantity-{{this._id}}" name="quantity" value="{{this.quantity}}" min="1"
+                            max="50" class="center-input" style="width: 30px;" disabled>
+                        <input type="button" value="+" onclick="plusQuantity('{{this._id}}')" class="qty-btn">
+                    </div>
+                    <div class="col"><a href="">Xóa</a></div>
+                </div>
+            </div>
+            {{else}}
+                <h5 class="red-text">Giỏ hàng trống!</h5>
+            {{/each}}
+        </div>
+        <div class="col-md-4 summary">
+            <div>
+                <h5><b>Thông tin đơn hàng</b></h5>
+            </div>
+            <hr>
+            <p>Ghi chú</p>
+            <textarea id="code" placeholder="Nhập ghi chú"></textarea>
+            <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
+                <div class="col">Tổng tiền: </div>
+                <div class="col text-right red-text">100000đ</div>
+            </div>
+            <button class="btn">Thanh Toán</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function plusQuantity(id) {
+        var quantityInput = document.getElementById(`quantity-${id}`);
+        var currentValue = parseInt(quantityInput.value);
+        if (currentValue < parseInt(quantityInput.getAttribute("max"))) {
+            quantityInput.value = currentValue + 1;
+            updateQuantityInCookies(id, quantityInput.value)
+        }
+    }
+
+    function minusQuantity(id) {
+        var quantityInput = document.getElementById(`quantity-${id}`);
+        var currentValue = parseInt(quantityInput.value);
+
+        if (currentValue > parseInt(quantityInput.getAttribute("min"))) {
+            quantityInput.value = currentValue - 1;
+            updateQuantityInCookies(id, quantityInput.value)
+        }
+    }
+
+    function updateQuantityInCookies(productId, newQuantity) {
+        let products = JSON.parse(getCookie("products"));
+
+        for (let i = 0; i < products.length; i++) {
+            if (products[i].productId === productId) {
+                products[i].quantity = newQuantity;
+                break;
+            }
+        }
+
+        document.cookie = `products=${JSON.stringify(products)};max-age=86400; path=/`;
+    }
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+</script>
