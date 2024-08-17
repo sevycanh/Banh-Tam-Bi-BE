@@ -11,11 +11,12 @@
             </div>
             {{#each cartProducts}}
             <div class="row border-top border-bottom">
-                <div class="row main align-items-center">
+                <div class="row main align-items-center" data-product-id="{{this._id}}"
+                    data-product-price="{{this.price}}">
                     <div class="col-2"><img class="img-fluid" src="{{this.image}}"></div>
                     <div class="col">
                         <div class="row">{{this.name}}</div>
-                        <div class="row red-text">{{this.price}}đ</div>
+                        <div class="row red-text" id="price-{{this._id}}"></div>
                     </div>
                     <div class="col ms-5">
                         <input type="button" value="-" onclick="minusQuantity('{{this._id}}')" class="qty-btn">
@@ -23,11 +24,11 @@
                             max="50" class="center-input" style="width: 30px;" disabled>
                         <input type="button" value="+" onclick="plusQuantity('{{this._id}}')" class="qty-btn">
                     </div>
-                    <div class="col"><a href="">Xóa</a></div>
+                    <div class="col"><button onclick="removeProduct('{{this._id}}')">Xóa</button></div>
                 </div>
             </div>
             {{else}}
-                <h5 class="red-text">Giỏ hàng trống!</h5>
+            <h5 class="red-text">Giỏ hàng trống!</h5>
             {{/each}}
         </div>
         <div class="col-md-4 summary">
@@ -35,13 +36,13 @@
                 <h5><b>Thông tin đơn hàng</b></h5>
             </div>
             <hr>
-            <p>Ghi chú</p>
-            <textarea id="code" placeholder="Nhập ghi chú"></textarea>
+            <p>Ghi chú:</p>
+            <textarea id="note" placeholder="Nhập ghi chú"></textarea>
             <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
                 <div class="col">Tổng tiền: </div>
-                <div class="col text-right red-text">100000đ</div>
+                <div class="col text-right red-text" id="total-price"></div>
             </div>
-            <button class="btn">Thanh Toán</button>
+            <button class="btn-thanh-toan" onclick="thanhToan()">Thanh Toán</button>
         </div>
     </div>
 </div>
@@ -53,6 +54,7 @@
         if (currentValue < parseInt(quantityInput.getAttribute("max"))) {
             quantityInput.value = currentValue + 1;
             updateQuantityInCookies(id, quantityInput.value)
+            updatePrice(id, currentValue + 1)
         }
     }
 
@@ -63,6 +65,7 @@
         if (currentValue > parseInt(quantityInput.getAttribute("min"))) {
             quantityInput.value = currentValue - 1;
             updateQuantityInCookies(id, quantityInput.value)
+            updatePrice(id, currentValue - 1)
         }
     }
 
@@ -83,5 +86,74 @@
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function updatePrice(id, newQuantity) {
+        let products = JSON.parse(getCookie("products"));
+
+        for (let i = 0; i < products.length; i++) {
+            if (products[i].productId === id) {
+                let originalPrice = products[i].price;
+                let newPrice = originalPrice * newQuantity;
+                document.getElementById(`price-${id}`).innerText = formatPrice(newPrice);
+                break;
+            }
+        }
+
+        updateTotalPrice()
+    }
+
+    function updatePriceOnLoad() {
+        let products = JSON.parse(getCookie("products"));
+
+        products.forEach(product => {
+            let quantity = product.quantity;
+            let price = product.price * quantity;
+            document.getElementById(`price-${product.productId}`).innerText = formatPrice(price);
+        });
+
+        updateTotalPrice()
+    }
+    window.addEventListener('load', updatePriceOnLoad);
+
+    function updateTotalPrice() {
+        let products = JSON.parse(getCookie("products"));
+        let totalPrice = products.reduce((total, product) => {
+            return total + (product.price * product.quantity);
+        }, 0);
+
+        document.getElementById('total-price').innerText = formatPrice(totalPrice);
+    }
+
+    function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + 'đ';
+    }
+
+    function removeProduct(productId) {
+        let products = JSON.parse(getCookie("products"));
+        // Lọc ra các sản phẩm không phải là sản phẩm cần xóa
+        products = products.filter(product => product.productId !== productId);
+        document.cookie = `products=${JSON.stringify(products)};max-age=86400; path=/`;
+        location.reload();
+    }
+
+    function thanhToan() {
+        const note = document.getElementById('note').value;
+
+        fetch('/cart/shipping-address', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                note: note
+            }),
+        })
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.error('Đã xảy ra lỗi:', error);
+            });
     }
 </script>

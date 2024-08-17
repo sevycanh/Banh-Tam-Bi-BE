@@ -20,6 +20,7 @@ app.engine(
     extname: ".hbs",
     helpers: {
       sum: (a, b) => a + b,
+      formatPrice: (price) => price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + 'đ'
     },
   }),
 );

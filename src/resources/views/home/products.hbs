@@ -7,14 +7,15 @@
         <div class="col-sm-6 col-lg-4">
             <div class="card card-course-item mb-4">
                 <a href="/products/{{this.slug}}">
-                <img src="{{this.image}}" class="card-img-top" alt="{{this.name}}">
+                    <img src="{{this.image}}" class="card-img-top" alt="{{this.name}}">
                 </a>
                 <div class="card-body">
                     <a href="/products/{{this.slug}}">
                         <h5 class="card-title">{{this.name}}</h5>
                     </a>
-                    <p class="card-text red-text">{{this.price}}</p>
-                    <button onclick="saveToCookies('{{this._id}}')" class="btn btn-primary">Đặt nhanh</button>
+                    <p class="card-text red-text">{{formatPrice this.price}}</p>
+                    <button onclick="saveToCookies('{{this._id}}', '{{this.price}}')" class="btn btn-primary">Đặt
+                        nhanh</button>
                 </div>
             </div>
         </div>
@@ -26,15 +27,15 @@
     const categoryId = "{{categoryId}}"
     const title = document.getElementById('title-category')
 
-    if (categoryId === "1"){
-        title.innerHTML= `Món chính`
-    } else if (categoryId === "2"){
+    if (categoryId === "1") {
+        title.innerHTML = `Món chính`
+    } else if (categoryId === "2") {
         title.innerHTML = `Món phụ`
     } else {
         title.innerHTML = `Nước uống`
     }
 
-    function saveToCookies(productId) {
+    function saveToCookies(productId, price) {
         var quantity = 1;
 
         var existingProducts = JSON.parse(getCookie('products') || '[]');
@@ -44,10 +45,10 @@
         if (productIndex !== -1) {
             existingProducts[productIndex].quantity += quantity;
         } else {
-            existingProducts.push({ productId: productId, quantity: quantity });
+            existingProducts.push({ productId: productId, price: price, quantity: quantity });
         }
 
-        document.cookie = 'products=' + JSON.stringify(existingProducts) + ';max-age=86400;path=/'; 
+        document.cookie = 'products=' + JSON.stringify(existingProducts) + ';max-age=86400;path=/';
         alert('Đã thêm vào giỏ hàng');
     }
 
@@ -55,4 +56,5 @@
         const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
         return cookieValue ? cookieValue.pop() : '';
     }
+
 </script>

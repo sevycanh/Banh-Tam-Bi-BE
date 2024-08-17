@@ -5,7 +5,7 @@
         </div>
         <div class="col-lg-5">
             <h1>{{product.name}}</h1>
-            <h3 class="red-text">{{product.price}}đ</h3>
+            <h3 class="red-text">{{formatPrice product.price}}</h3>
             <h5>Mô tả:</h5>
             <p>{{product.description}}</p>
             <div class="mb-5">
@@ -39,6 +39,7 @@
 
     function saveToCookies() {
         var productId = "{{product._id}}";
+        var price = '{{product.price}}';
         var quantity = parseInt(document.getElementById("quantity").value);
 
         var existingProducts = JSON.parse(getCookie('products') || '[]');
@@ -48,7 +49,7 @@
         if (productIndex !== -1) {
             existingProducts[productIndex].quantity += quantity;
         } else {
-            existingProducts.push({ productId: productId, quantity: quantity });
+            existingProducts.push({ productId: productId, price: price, quantity: quantity });
         }
 
         document.cookie = 'products=' + JSON.stringify(existingProducts) + ';max-age=86400;path=/'; 

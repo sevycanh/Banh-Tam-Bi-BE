@@ -14,6 +14,7 @@ module.exports = {
       res.render("product/get", {
         data: {
           isAdmin: true,
+          id: req.data && req.data.id !== undefined ? req.data.id : -1,
         },
         products: multipleMongooseToObject(products),
         productsSortDeleted,
@@ -27,6 +28,7 @@ module.exports = {
     res.render("product/create", {
       data: {
         isAdmin: true,
+        id: req.data && req.data.id !== undefined ? req.data.id : -1,
       },
     });
   },
@@ -53,6 +55,7 @@ module.exports = {
         res.render("product/trash", {
           data: {
             isAdmin: true,
+            id: req.data && req.data.id !== undefined ? req.data.id : -1,
           },
           products: multipleMongooseToObject(products),
         })
@@ -77,6 +80,7 @@ module.exports = {
       res.render("product/update", {
         data: {
           isAdmin: true,
+          id: req.data && req.data.id !== undefined ? req.data.id : -1,
         },
         product: mongooseToObject(product),
       })
@@ -123,6 +127,7 @@ module.exports = {
               req.data && req.data.isAdmin !== undefined
                 ? req.data.isAdmin
                 : -1,
+            id: req.data && req.data.id !== undefined ? req.data.id : -1,
           },
         });
       })
@@ -139,6 +144,7 @@ const getProductsByCategoryId = (req, res, categoryId) => {
         data: {
           isAdmin:
             req.data && req.data.isAdmin !== undefined ? req.data.isAdmin : -1,
+          id: req.data && req.data.id !== undefined ? req.data.id : -1,
         },
       });
     })

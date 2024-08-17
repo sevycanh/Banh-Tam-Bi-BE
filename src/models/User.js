@@ -7,7 +7,7 @@ const User = new Schema(
     phone: { type: String, unique: true },
     password: { type: String },
     name: { type: String },
-    location: { type: String },
+    address: { type: String },
     isAdmin: { type: Boolean },
   },
   { timestamps: true }

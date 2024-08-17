@@ -12,6 +12,7 @@ module.exports = {
       res.render("home/home", {
         data: {
           isAdmin: -1,
+          id: -1,
         },
       });
     } else {
@@ -21,6 +22,7 @@ module.exports = {
           res.render("home/home", {
             data: {
               isAdmin: -1,
+              id: -1,
             },
           });
         } else {
