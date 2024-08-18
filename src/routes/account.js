@@ -3,6 +3,7 @@ const AccountController = require('../controllers/AccountController');
 const { verifyForHeader } = require('../middleware/authen');
 const router = express.Router();
 
-router.get("/:id",verifyForHeader, AccountController.getAccountInfo)
+router.patch("/:id", AccountController.updateAddress)
+router.get("/:id/address",verifyForHeader, AccountController.getAddress)
 
 module.exports = router;

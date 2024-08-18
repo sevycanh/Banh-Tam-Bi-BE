@@ -56,8 +56,8 @@
 
   if (userIsAdmin == "false") {
     dropdownMenu.innerHTML = `
-        <li><a class="dropdown-item" href="/accounts/${userId}">Thông tin cá nhân</a></li>
-        <li><a class="dropdown-item" href="#">Đơn hàng của tôi</a></li>
+    <li><a class="dropdown-item" href="#">Đơn hàng của tôi</a></li>
+        <li><a class="dropdown-item" href="/accounts/${userId}/address">Địa chỉ nhận hàng</a></li>
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="/auth/logout">Đăng xuất</a></li>
     `;
@@ -78,7 +78,7 @@
     });
 
     dropdownMenu.innerHTML = `
-        <li><a class="dropdown-item" href="/accounts/${userId}">Thông tin cá nhân</a></li>
+        <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="/auth/logout">Đăng xuất</a></li>
     `;

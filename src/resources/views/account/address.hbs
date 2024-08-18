@@ -1,0 +1,87 @@
+<form class="was-validated" method="POST" action="/accounts/{{user._id}}?_method=PATCH">
+    <h1>Địa chỉ nhận hàng</h1>
+    <div class="row mt-4">
+        <div class="mb-3 col-lg-5">
+            <label for="validationName" class="form-label">Họ và tên</label>
+            <input class="form-control" id="validationName" name="name" placeholder="Nhập họ và tên" required></input>
+            <div class="invalid-feedback">
+                Vui lòng nhập họ và tên nhận hàng.
+            </div>
+        </div>
+        <div class="mb-3 col-lg-5">
+            <label for="validationPhone" class="form-label">Số điện thoại</label>
+            <input class="form-control" id="validationPhone" name="phone" placeholder="Nhập số điện thoại"
+                required></input>
+            <div class="invalid-feedback">
+                Vui lòng nhập số điện thoại nhận hàng.
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="mb-3 col-lg-3">
+            <select class="form-select" required name="cityId" aria-label="select example">
+                <option value="">Chọn tỉnh/thành phố</option>
+                <option value="79">Thành phố Hồ Chí Minh</option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn tỉnh/thành phố</div>
+        </div>
+        <div class="mb-3 col-lg-3">
+            <select class="form-select" id="districts" name="districtId" onchange="getWard(event)" required aria-label="select example">
+                <option value="">Chọn quận/huyện</option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn quận/huyện</div>
+        </div>
+        <div class="mb-3 col-lg-3">
+            <select class="form-select" id="wards" name="wardId" required aria-label="select example">
+                <option value="">Chọn phường/xã</option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn phường/xã</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="mb-3 col-lg-5">
+            <label for="validationNumber" class="form-label">Số nhà</label>
+            <input class="form-control" id="validationNumber" name="number" placeholder="Nhập số nhà" required></input>
+            <div class="invalid-feedback">
+                Vui lòng nhập số nhà nhận hàng.
+            </div>
+        </div>
+        <div class="mb-3 col-lg-5">
+            <label for="validationStreet" class="form-label">Tên đường</label>
+            <input class="form-control" id="validationStreet" name="street" placeholder="Nhập tên đường"
+                required></input>
+            <div class="invalid-feedback">
+                Vui lòng nhập tên đường nhận hàng.
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <button class="btn btn-primary" type="submit">Cập nhật</button>
+    </div>
+</form>
+
+<script>
+    fetch('https://esgoo.net/api-tinhthanh/2/79.htm').then(response => response.json()).then(
+        data => {
+            let districts = data.data;
+            districts.map(district => document.getElementById('districts').innerHTML += `<option value="${district.id}">${district.full_name}</option>`)
+        }
+    ).catch(err => {
+        alert("Lỗi lấy danh sách quận/huyện")
+    })
+
+    function getWard(districtId){
+        fetch(`https://esgoo.net/api-tinhthanh/3/${districtId.target.value}.htm`).then(
+            response=> response.json()
+        ).then(
+            data => {
+                let wards = data.data;
+                wards.map(ward => document.getElementById('wards').innerHTML += `<option value="${ward.id}">${ward.full_name}</option>`)
+            }
+        ).catch(err => {
+            alert("Lỗi lấy danh sách phường xã")
+        })
+    }
+</script>
