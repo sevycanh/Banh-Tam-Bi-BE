@@ -1,9 +1,10 @@
-<form class="was-validated" method="POST" action="/accounts/{{user._id}}?_method=PATCH">
+<form class="was-validated" method="POST" action="/accounts/{{id}}?_method=PATCH">
     <h1>Địa chỉ nhận hàng</h1>
     <div class="row mt-4">
         <div class="mb-3 col-lg-5">
             <label for="validationName" class="form-label">Họ và tên</label>
-            <input class="form-control" id="validationName" name="name" placeholder="Nhập họ và tên" required></input>
+            <input class="form-control" id="validationName" name="name" placeholder="Nhập họ và tên"
+                value="{{address.name}}" required></input>
             <div class="invalid-feedback">
                 Vui lòng nhập họ và tên nhận hàng.
             </div>
@@ -11,7 +12,7 @@
         <div class="mb-3 col-lg-5">
             <label for="validationPhone" class="form-label">Số điện thoại</label>
             <input class="form-control" id="validationPhone" name="phone" placeholder="Nhập số điện thoại"
-                required></input>
+                value="{{address.phone}}" required></input>
             <div class="invalid-feedback">
                 Vui lòng nhập số điện thoại nhận hàng.
             </div>
@@ -20,14 +21,15 @@
 
     <div class="row">
         <div class="mb-3 col-lg-3">
-            <select class="form-select" required name="cityId" aria-label="select example">
+            <select class="form-select" required name="cityId" id="city" aria-label="select example">
                 <option value="">Chọn tỉnh/thành phố</option>
                 <option value="79">Thành phố Hồ Chí Minh</option>
             </select>
             <div class="invalid-feedback">Vui lòng chọn tỉnh/thành phố</div>
         </div>
         <div class="mb-3 col-lg-3">
-            <select class="form-select" id="districts" name="districtId" onchange="getWard(event)" required aria-label="select example">
+            <select class="form-select" id="districts" name="districtId" onchange="getWard(event)" required
+                aria-label="select example">
                 <option value="">Chọn quận/huyện</option>
             </select>
             <div class="invalid-feedback">Vui lòng chọn quận/huyện</div>
@@ -42,7 +44,8 @@
     <div class="row">
         <div class="mb-3 col-lg-5">
             <label for="validationNumber" class="form-label">Số nhà</label>
-            <input class="form-control" id="validationNumber" name="number" placeholder="Nhập số nhà" required></input>
+            <input class="form-control" id="validationNumber" name="number" placeholder="Nhập số nhà"
+                value="{{address.number}}" required></input>
             <div class="invalid-feedback">
                 Vui lòng nhập số nhà nhận hàng.
             </div>
@@ -50,7 +53,7 @@
         <div class="mb-3 col-lg-5">
             <label for="validationStreet" class="form-label">Tên đường</label>
             <input class="form-control" id="validationStreet" name="street" placeholder="Nhập tên đường"
-                required></input>
+                value="{{address.street}}" required></input>
             <div class="invalid-feedback">
                 Vui lòng nhập tên đường nhận hàng.
             </div>
@@ -72,9 +75,9 @@
         alert("Lỗi lấy danh sách quận/huyện")
     })
 
-    function getWard(districtId){
+    function getWard(districtId) {
         fetch(`https://esgoo.net/api-tinhthanh/3/${districtId.target.value}.htm`).then(
-            response=> response.json()
+            response => response.json()
         ).then(
             data => {
                 let wards = data.data;
@@ -83,5 +86,67 @@
         ).catch(err => {
             alert("Lỗi lấy danh sách phường xã")
         })
+    }
+
+    //Lấy dữ liệu khi load
+    const districtId = '{{address.district}}'
+    if (districtId !== "") {
+        //selected thành phố
+        const cityId = "79";
+        const citySelect = document.getElementById("city");
+        const options = citySelect.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === cityId) {
+                options[i].selected = true;
+                break;
+            }
+        }
+
+        //Load quận
+        fetch('https://esgoo.net/api-tinhthanh/2/79.htm').then(response => response.json()).then(
+            data => {
+                console.log("done")
+                let districts = data.data;
+                districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district.id;
+                    option.textContent = district.full_name;
+
+                    if (districtId === district.id) {
+                        option.selected = true;
+                    }
+
+                    document.getElementById('districts').appendChild(option);
+                });
+            }
+        ).catch(err => {
+            alert("Lỗi lấy danh sách quận/huyện")
+        })
+
+        //Load phường trong quận
+        fetch(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`).then(
+            response => response.json()
+        ).then(
+            data => {
+                let wardId = '{{address.ward}}';
+                let wards = data.data;
+
+                wards.forEach(ward => {
+                    const option = document.createElement('option');
+                    option.value = ward.id;
+                    option.textContent = ward.full_name;
+
+                    if (wardId === ward.id) {
+                        option.selected = true;
+                    }
+
+                    document.getElementById('wards').appendChild(option);
+                });
+            }
+        ).catch(err => {
+            alert("Lỗi lấy danh sách phường xã")
+        })
+
+        //Load 
     }
 </script>
