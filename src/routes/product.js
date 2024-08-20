@@ -1,7 +1,7 @@
 const express = require('express');
 const ProductController = require('../controllers/ProductController');
 const verifyToken = require('../middleware/verifyToken');
-const { verifyForHeader } = require('../middleware/authen');
+const { verifyForHeader, verifyForAddress } = require('../middleware/authen');
 const router = express.Router();
 
 router.put("/:id", ProductController.editProduct)

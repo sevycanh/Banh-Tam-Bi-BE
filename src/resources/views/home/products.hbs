@@ -43,7 +43,7 @@
         // Kiểm tra nếu sản phẩm đã tồn tại trong danh sách thì cập nhật số lượng, ngược lại thêm sản phẩm mới
         var productIndex = existingProducts.findIndex(item => item.productId === productId);
         if (productIndex !== -1) {
-            existingProducts[productIndex].quantity += quantity;
+            existingProducts[productIndex].quantity = parseInt(existingProducts[productIndex].quantity) + quantity;
         } else {
             existingProducts.push({ productId: productId, price: price, quantity: quantity });
         }
