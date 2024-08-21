@@ -45,6 +45,15 @@
             </div>
             <p>Ghi chú:</p>
             <textarea id="note" placeholder="Nhập ghi chú"></textarea>
+            <p>Phương thức thanh toán:</p>
+            <div class="col-lg-12">
+            <select class="form-select" id="districts" name="districtId" onchange="getWard(event)" required
+                aria-label="select example">
+                <option value="">---Chọn phương thức thanh toán---</option>
+                <option value="COD">Thanh toán bằng tiền mặt</option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn quận/huyện</div>
+            </div>
             <div class="row" style="border-top: 1px solid rgba(0,0,0,.1);">
                 <div class="col mt-3">Tiền hàng: </div>
                 <div class="col mt-3 text-right" id="total-price"></div>
@@ -173,13 +182,14 @@
     function thanhToan() {
         const note = document.getElementById('note').value;
 
-        fetch('/cart/shipping-address', {
+        fetch('/cart/payment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                note: note
+                note: note,
+
             }),
         })
             .then(response => {
