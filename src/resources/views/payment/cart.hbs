@@ -35,7 +35,7 @@
             <div>
                 <h4><b>Thông tin đơn hàng</b></h4>
             </div>
-         
+
             <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
                 <div class="col">Địa chỉ giao hàng: </div>
                 <div class="col text-right"><a href="/accounts/{{user._id}}/address">(Thay đổi)</a></div>
@@ -47,26 +47,26 @@
             <textarea id="note" placeholder="Nhập ghi chú"></textarea>
             <p>Phương thức thanh toán:</p>
             <div class="col-lg-12">
-            <select class="form-select" id="districts" name="districtId" onchange="getWard(event)" required
-                aria-label="select example">
-                <option value="">---Chọn phương thức thanh toán---</option>
-                <option value="COD">Thanh toán bằng tiền mặt</option>
-            </select>
-            <div class="invalid-feedback">Vui lòng chọn quận/huyện</div>
+                <select class="form-select" id="paymentMethod" name="paymentMethod" required
+                    aria-label="select example">
+                    <option value="">---Chọn phương thức thanh toán---</option>
+                    <option value="COD">Thanh toán bằng tiền mặt</option>
+                </select>
+                <div class="invalid-feedback">Vui lòng chọn quận/huyện</div>
             </div>
             <div class="row" style="border-top: 1px solid rgba(0,0,0,.1);">
                 <div class="col mt-3">Tiền hàng: </div>
-                <div class="col mt-3 text-right" id="total-price"></div>
+                <div class="col mt-3 text-right" id="total-price">0đ</div>
             </div>
             <div class="row">
                 <div class="col">Phí giao hàng: </div>
-                <div class="col text-right" id="">20.000đ</div>
+                <div class="col text-right" id="shipping-fee">20.000đ</div>
             </div>
             <div class="row mb-4">
                 <div class="col">Tổng đơn hàng: </div>
-                <div class="col text-right red-text" id="final-price"></div>
+                <div class="col text-right red-text" id="final-price">0đ</div>
             </div>
-            <button class="btn-thanh-toan" onclick="thanhToan()">Thanh Toán</button>
+            <button class="btn-thanh-toan" onclick="thanhToan('{{user._id}}')">Thanh Toán</button>
         </div>
     </div>
 </div>
@@ -94,16 +94,19 @@
     }
 
     function updateQuantityInCookies(productId, newQuantity) {
-        let products = JSON.parse(getCookie("products"));
+        if (checkCookieExists("products")) {
+            let products = JSON.parse(getCookie("products"));
 
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].productId === productId) {
-                products[i].quantity = newQuantity;
-                break;
+            for (let i = 0; i < products.length; i++) {
+                if (products[i].productId === productId) {
+                    products[i].quantity = newQuantity;
+                    break;
+                }
             }
+
+            document.cookie = `products=${JSON.stringify(products)};max-age=86400; path=/`;
         }
 
-        document.cookie = `products=${JSON.stringify(products)};max-age=86400; path=/`;
     }
 
     function getCookie(name) {
@@ -113,64 +116,80 @@
     }
 
     function updatePrice(id, newQuantity) {
-        let products = JSON.parse(getCookie("products"));
+        if (checkCookieExists("products")) {
+            let products = JSON.parse(getCookie("products"));
 
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].productId === id) {
-                let originalPrice = products[i].price;
-                let newPrice = originalPrice * newQuantity;
-                document.getElementById(`price-${id}`).innerText = formatPrice(newPrice);
-                break;
+            for (let i = 0; i < products.length; i++) {
+                if (products[i].productId === id) {
+                    let originalPrice = products[i].price;
+                    let newPrice = originalPrice * newQuantity;
+                    document.getElementById(`price-${id}`).innerText = formatPrice(newPrice);
+                    break;
+                }
             }
+
+            updateTotalPrice()
         }
 
-        updateTotalPrice()
     }
 
     function updatePriceOnLoad() {
-        let products = JSON.parse(getCookie("products"));
+        if (checkCookieExists("products")) {
+            let products = JSON.parse(getCookie("products"));
 
-        products.forEach(product => {
-            let quantity = product.quantity;
-            let price = product.price * quantity;
-            document.getElementById(`price-${product.productId}`).innerText = formatPrice(price);
-        });
+            products.forEach(product => {
+                let quantity = product.quantity;
+                let price = product.price * quantity;
+                document.getElementById(`price-${product.productId}`).innerText = formatPrice(price);
+            });
 
-        updateTotalPrice()
+            updateTotalPrice()
+        }
+
     }
     window.addEventListener('load', updatePriceOnLoad);
 
     function updateTotalPrice() {
-        let products = JSON.parse(getCookie("products"));
-        let totalPrice = products.reduce((total, product) => {
-            return total + (product.price * product.quantity);
-        }, 0);
-        //tổng tiền hàng
-        document.getElementById('total-price').innerText = formatPrice(totalPrice);
+        if (checkCookieExists("products")) {
+            let products = JSON.parse(getCookie("products"));
+            let totalPrice = products.reduce((total, product) => {
+                return total + (product.price * product.quantity);
+            }, 0);
+            //tổng tiền hàng
+            document.getElementById('total-price').innerText = formatPrice(totalPrice);
 
-        //Tính tổng tiền
-        let finalPrice = totalPrice + 20000;
-        document.getElementById('final-price').innerText = formatPrice(finalPrice);
+            //Tính tổng tiền
+            let finalPrice = totalPrice + 20000;
+            document.getElementById('final-price').innerText = formatPrice(finalPrice);
+        }
+
     }
 
     function formatPrice(price) {
         return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + 'đ';
     }
 
+    function checkCookieExists(cookieName) {
+        return document.cookie.split(';').some((item) => item.trim().startsWith(`${cookieName}=`));
+    }
+
     function removeProduct(productId) {
-        let products = JSON.parse(getCookie("products"));
-        // Lọc ra các sản phẩm không phải là sản phẩm cần xóa
-        products = products.filter(product => product.productId !== productId);
-        document.cookie = `products=${JSON.stringify(products)};max-age=86400; path=/`;
-        location.reload();
+        if (checkCookieExists("products")) {
+            let products = JSON.parse(getCookie("products"));
+            // Lọc ra các sản phẩm không phải là sản phẩm cần xóa
+            products = products.filter(product => product.productId !== productId);
+            document.cookie = `products=${JSON.stringify(products)};max-age=86400; path=/`;
+            location.reload();
+        }
     }
 
     const user = '{{user.address}}'
     const address = user.split(", ");
+    var addressTransform;
     fetch(`https://esgoo.net/api-tinhthanh/5/27313.htm`).then(response => response.json()).then(
         data => {
             const addressDetail = data.data.full_name;
-            const addressTransform = address[0] + ', ' + address[1] + ', ' + address[5] + ' ' + address[6] + ', ' + addressDetail
+            addressTransform = address[0] + ', ' + address[1] + ', ' + address[5] + ' ' + address[6] + ', ' + addressDetail
 
             const addressElement = document.getElementById("addressValue");
             addressElement.textContent = addressTransform;
@@ -179,24 +198,80 @@
         alert("Lỗi chuyển đổi id sang tên địa chỉ")
     })
 
-    function thanhToan() {
-        const note = document.getElementById('note').value;
+    function thanhToan(userId) {
+        let cartProducts = '{{cartProducts}}'
+        if (cartProducts === '') {
+            alert("Chưa có sản phẩm nào trong giỏ")
+            return
+        }
 
-        fetch('/cart/payment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        var selectedPaymentMethod = document.getElementById('paymentMethod').value;
+
+        if (selectedPaymentMethod === '') {
+            alert('Vui lòng chọn phương thức thanh toán trước khi thanh toán.');
+        } else {
+            const note = document.getElementById('note').value;
+            const token = '{{token}}'
+
+            const totalPrice = document.getElementById('total-price').textContent.trim();
+            const shippingFee = document.getElementById('shipping-fee').textContent.trim();
+            const finalPrice = document.getElementById('final-price').textContent.trim();
+            
+            const order = {
+                userId: userId,
                 note: note,
+                deliverAddress: addressTransform,
+                paymentMethod:selectedPaymentMethod,
+                totalPrice: totalPrice,
+                shippingFee: shippingFee,
+                finalPrice: finalPrice,
+                status: 1,
+                orderDate: getTimeNow(),
+            }
 
-            }),
-        })
-            .then(response => {
-                console.log(response);
-            })
-            .catch(error => {
-                console.error('Đã xảy ra lỗi:', error);
+            const productsData = [];
+
+            document.querySelectorAll('.main').forEach(productElement => {
+                const productId = productElement.getAttribute('data-product-id');
+                const quantity = productElement.querySelector(`#quantity-${productId}`).value;
+                const price = parseFloat(productElement.getAttribute('data-product-price'));
+                const totalAmount = price * parseInt(quantity);
+                
+                productsData.push({ productId, quantity, totalAmount });
             });
+
+            fetch('/cart/payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    order,
+                    products: productsData 
+                }),
+            })
+                .then(response => {
+                    //console.log(response);
+                })
+                .catch(error => {
+                    console.error('Đã xảy ra lỗi:', error);
+                });
+        }
+    }
+
+    function getTimeNow() {
+        const now = new Date();
+
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // tháng bắt đầu từ 0
+        const year = now.getFullYear(); 
+        const hours = String(now.getHours()).padStart(2, '0'); 
+        const minutes = String(now.getMinutes()).padStart(2, '0'); 
+        const seconds = String(now.getSeconds()).padStart(2, '0'); 
+
+        // ngày/tháng/năm - giờ:phút:giây
+        const formattedDateTime = `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+        return formattedDateTime;
     }
 </script>

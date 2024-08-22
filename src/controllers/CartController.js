@@ -1,3 +1,5 @@
+const Order = require("../models/Order");
+const OrderDetail = require("../models/OrderDetail");
 const Product = require("../models/Product");
 const User = require("../models/User");
 const {
@@ -11,6 +13,12 @@ module.exports = {
     try {
       const cookies = req.cookies.products;
       if (cookies) {
+        if (typeof localStorage === "undefined" || localStorage === null) {
+          var LocalStorage = require("node-localstorage").LocalStorage;
+          localStorage = new LocalStorage("./scratch");
+        }
+        const token = localStorage.getItem("token");
+
         products = JSON.parse(cookies);
         const getProductInfo = async () => {
           const cartProducts = [];
@@ -31,6 +39,7 @@ module.exports = {
           res.render("payment/cart", {
             cartProducts: multipleMongooseToObject(cartProducts),
             user: mongooseToObject(user),
+            token: token,
             data: {
               isAdmin:
                 req.data && req.data.isAdmin !== undefined
@@ -79,11 +88,42 @@ module.exports = {
     }
   },
 
-  shoppingAddressPage: (req, res) => {
-    const note = req.body.node;
-    res.render("payment/shoppingAddress", {
-      note,
-    });
+  createOrder: async (req, res) => {
+    const newOrder = new Order(req.body.order);
+    try {
+      const order = await newOrder.save();
+      if (order) {
+        const newOrderDetail = new OrderDetail({
+          orderId: order._doc._id,
+          products: req.body.products,
+        });
+        const orderDetail = await newOrderDetail.save();
+        if (orderDetail) {
+          // res.status(201).json({
+          //   message: "Created Order",
+          // });
+          res.render("account/order", {
+            data: {
+              isAdmin:
+                req.data && req.data.isAdmin !== undefined
+                  ? req.data.isAdmin
+                  : -1,
+              id: req.data && req.data.id !== undefined ? req.data.id : -1,
+            },
+          });
+        } else {
+          res.status(500).json({
+            message: "Create Fail OrderDetail",
+          });
+        }
+      } else {
+        res.status(500).json({
+          message: "Create Fail Order",
+        });
+      }
+    } catch (error) {
+      res.status(500).json(error);
+    }
   },
 };
 

@@ -4,6 +4,6 @@ const { verifyForHeader, verifyForCart, verifyForAddress } = require('../middlew
 const router = express.Router();
 
 router.get("/",verifyForHeader, verifyForCart, verifyForAddress, CartController.getCart)
-router.post("/payment", verifyForHeader, CartController.shoppingAddressPage)
+router.post("/payment", verifyForCart, CartController.createOrder)
 
 module.exports = router;
