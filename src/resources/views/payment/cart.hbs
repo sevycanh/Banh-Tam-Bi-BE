@@ -216,12 +216,12 @@
             const totalPrice = document.getElementById('total-price').textContent.trim();
             const shippingFee = document.getElementById('shipping-fee').textContent.trim();
             const finalPrice = document.getElementById('final-price').textContent.trim();
-            
+
             const order = {
                 userId: userId,
                 note: note,
                 deliverAddress: addressTransform,
-                paymentMethod:selectedPaymentMethod,
+                paymentMethod: selectedPaymentMethod,
                 totalPrice: totalPrice,
                 shippingFee: shippingFee,
                 finalPrice: finalPrice,
@@ -236,7 +236,7 @@
                 const quantity = productElement.querySelector(`#quantity-${productId}`).value;
                 const price = parseFloat(productElement.getAttribute('data-product-price'));
                 const totalAmount = price * parseInt(quantity);
-                
+
                 productsData.push({ productId, quantity, totalAmount });
             });
 
@@ -248,11 +248,20 @@
                 },
                 body: JSON.stringify({
                     order,
-                    products: productsData 
+                    products: productsData
                 }),
             })
                 .then(response => {
-                    //console.log(response);
+                    var cookies = document.cookie.split(";");
+
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = cookies[i];
+                        var eqPos = cookie.indexOf("=");
+                        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                        document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+                    }
+
+                    window.location.href = `/accounts/${userId}/order`;
                 })
                 .catch(error => {
                     console.error('Đã xảy ra lỗi:', error);
@@ -265,10 +274,10 @@
 
         const day = String(now.getDate()).padStart(2, '0');
         const month = String(now.getMonth() + 1).padStart(2, '0'); // tháng bắt đầu từ 0
-        const year = now.getFullYear(); 
-        const hours = String(now.getHours()).padStart(2, '0'); 
-        const minutes = String(now.getMinutes()).padStart(2, '0'); 
-        const seconds = String(now.getSeconds()).padStart(2, '0'); 
+        const year = now.getFullYear();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
 
         // ngày/tháng/năm - giờ:phút:giây
         const formattedDateTime = `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;

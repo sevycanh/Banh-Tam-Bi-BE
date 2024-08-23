@@ -167,9 +167,10 @@
 }
 
 .max-width-td {
-  max-width: 500px; /* Giới hạn chiều rộng tối đa là 200px */
+  max-width: 480px; /* Giới hạn chiều rộng tối đa là 200px */
   overflow: hidden; /* Ẩn nội dung dư thừa nếu vượt quá giới hạn */
   text-overflow: ellipsis; /* Hiển thị dấu chấm (...) nếu nội dung quá giới hạn */
+  white-space: nowrap; //Giới hạn 1 dòng
 }
 
 .red-text {
@@ -179,3 +180,4 @@
 .center-input {
   text-align: center;
 }
+

@@ -1,1 +1,55 @@
-<h1>Order</h1>
+<h1>Đơn hàng đã mua</h1>
+<br>
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th scope="col">Mã đơn hàng</th>
+            <th scope="col">Sản phẩm</th>
+            <th scope="col">Ngày đặt</th>
+            <th scope="col">Tổng thành tiền</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col">Chi tiết đơn</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each orders}}
+        <tr>
+            <td>{{this._id}}</td>
+            <td class="max-width-td">{{this.productNames}}</td>
+            <td>{{this.orderDate}}</td>
+            <td>{{this.finalPrice}}</td>
+            <td id="status">{{this.status}}</td>
+            <td><a href=""> Xem chi tiết</a></td>
+        </tr>
+        {{else}}
+        <tr>
+            <td colspan="7" class="text-center">
+                Bạn chưa có đơn hàng nào!
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<script>
+    function getStatusString(status) {
+        if (status === 1) {
+            return "Chưa xác nhận";
+        } else if (status === 2) {
+            return "Đã xác nhận";
+        } else if (status === 3) {
+            return "Đang giao";
+        } else if (status === 4) {
+            return "Đã giao";
+        } else {
+            return "Đã hủy";
+        }
+    }
+
+    document.querySelectorAll('tbody tr').forEach(row => {
+        const statusCell = row.querySelector('#status');
+        const status = parseInt(statusCell.textContent);
+
+        statusCell.textContent = getStatusString(status);
+    });
+</script>

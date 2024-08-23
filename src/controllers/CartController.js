@@ -6,7 +6,6 @@ const {
   multipleMongooseToObject,
   mongooseToObject,
 } = require("../util/mongoose");
-const axios = require("axios");
 module.exports = {
   getCart: (req, res) => {
     let products;
@@ -99,17 +98,8 @@ module.exports = {
         });
         const orderDetail = await newOrderDetail.save();
         if (orderDetail) {
-          // res.status(201).json({
-          //   message: "Created Order",
-          // });
-          res.render("account/order", {
-            data: {
-              isAdmin:
-                req.data && req.data.isAdmin !== undefined
-                  ? req.data.isAdmin
-                  : -1,
-              id: req.data && req.data.id !== undefined ? req.data.id : -1,
-            },
+          res.status(201).json({
+            message: "Created Order",
           });
         } else {
           res.status(500).json({
