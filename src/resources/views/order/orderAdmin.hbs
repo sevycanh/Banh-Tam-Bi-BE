@@ -1,0 +1,87 @@
+<h1>Danh sách đơn hàng</h1>
+<br>
+<nav class="nav nav-pills nav-fill">
+    <a class="nav-link" aria-current="page" href="/order/manager?status=0">Tất cả đơn hàng</a>
+    <a class="nav-link" href="/order/manager?status=1">Chưa xác nhận</a>
+    <a class="nav-link" href="/order/manager?status=2">Đã xác nhận</a>
+    <a class="nav-link" href="/order/manager?status=3">Đang giao</a>
+    <a class="nav-link" href="/order/manager?status=4">Đã giao</a>
+    <a class="nav-link" href="/order/manager?status=5">Đã hủy</a>
+</nav>
+<br>
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th scope="col">Mã đơn hàng</th>
+            <th scope="col">Sản phẩm</th>
+            <th scope="col">Ngày đặt</th>
+            <th scope="col">Tổng thành tiền</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col">Chi tiết đơn</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each orders}}
+        <tr>
+            <td>{{this._id}}</td>
+            <td class="max-width-td">{{this.productNames}}</td>
+            <td>{{this.orderDate}}</td>
+            <td>{{this.finalPrice}}</td>
+            <td><select class="form-select form-select-sm checkbox-select-all-options"
+                    aria-label="Default select example" data-status="{{this.status}}" id="select-{{this._id}}">
+                    <option value="1">Chưa xác nhận</option>
+                    <option value="2">Đã xác nhận</option>
+                    <option value="3">Đang giao</option>
+                    <option value="4">Đã giao</option>
+                    <option value="5">Đã hủy</option>
+                </select></td>
+            <td><a href="/order/manager/{{this._id}}"> Xem chi tiết</a></td>
+        </tr>
+        {{else}}
+        <tr>
+            <td colspan="7" class="text-center">
+                Bạn chưa có đơn hàng nào!
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Set select status
+
+        const selects = document.querySelectorAll('select[data-status]');
+
+        selects.forEach(select => {
+            const status = parseInt(select.getAttribute('data-status'));
+            select.value = status.toString();
+        });
+
+        // <a class = "active">
+        const currentUrl = window.location.href;
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        navLinks.forEach(link => {
+            const linkUrl = link.getAttribute('href');
+            const status = parseInt(linkUrl.split('=')[1]);
+
+            if (currentUrl.includes(`status=${status}`)) {
+                link.classList.add('active');
+            }
+        });
+
+        // Bắt sự thay đổi mỗi khi thực hiện thay đổi select
+        selects.forEach(select => {
+            select.addEventListener('change', function() {
+                const selectedValue = this.value;
+                const orderId = this.id.replace('select-', '');
+
+                console.log(`Đã thay đổi trạng thái của đơn hàng ${orderId} thành ${selectedValue}`);
+            });
+        });
+
+    });
+
+</script>

@@ -56,7 +56,7 @@
 
   if (userIsAdmin == "false") {
     dropdownMenu.innerHTML = `
-    <li><a class="dropdown-item" href="/accounts/${userId}/order">Đơn hàng của tôi</a></li>
+    <li><a class="dropdown-item" href="/order/${userId}">Đơn hàng của tôi</a></li>
         <li><a class="dropdown-item" href="/accounts/${userId}/address">Địa chỉ nhận hàng</a></li>
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="/auth/logout">Đăng xuất</a></li>
@@ -88,7 +88,7 @@
     // Tạo một mảng chứa các thông tin của các mục menu mới
     const newMenuItems = [
       { text: 'Quản lý sản phẩm', link: '/products' },
-      { text: 'Quản lý đơn hàng', link: '#' },
+      { text: 'Quản lý đơn hàng', link: '/order/manager?status=0' },
       { text: 'Quản lý tài khoản', link: '#' }
     ];
     // Duyệt qua mảng mới và thêm các mục vào danh sách menu

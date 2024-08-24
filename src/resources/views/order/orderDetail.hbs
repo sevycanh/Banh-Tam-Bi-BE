@@ -1,0 +1,55 @@
+<h1>Chi tiết đơn hàng {{orderDetail.orderId._id}}</h1>
+<p>Ngày đặt: <b>{{orderDetail.orderId.orderDate}}</b></p>
+<p>Trạng thái: <b id="status">{{orderDetail.orderId.status}}</b></p>
+<p>Người nhận: {{orderDetail.orderId.deliverAddress}}</p>
+<p>Phương thức thanh toán: <b>{{orderDetail.orderId.paymentMethod}}</b></p>
+<p>Ghi chú: <b class="red-text">{{orderDetail.orderId.note}}</b></p>
+<p>Tiền hàng: {{orderDetail.orderId.totalPrice}}</p>
+<p>Phí giao hàng: {{orderDetail.orderId.shippingFee}}</p>
+<p>Tổng đơn hàng: <b>{{orderDetail.orderId.finalPrice}}</b></p>
+<br>
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th scope="col">Tên sản phẩm</th>
+            <th scope="col">Giá bán</th>
+            <th scope="col">Số lượng</th>
+            <th scope="col">Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each products}}
+        <tr>
+            <td>{{this.productId.name}}</td>
+            <td>{{this.productId.price}}</td>
+            <td>{{this.quantity}}</td>
+            <td id="status">{{this.totalAmount}}</td>
+        </tr>
+        {{else}}
+        <tr>
+            <td colspan="4" class="text-center">
+                Đơn hàng không được chấp nhận
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<script>
+    function getStatusString(status) {
+        if (status === 1) {
+            return "Chưa xác nhận";
+        } else if (status === 2) {
+            return "Đã xác nhận";
+        } else if (status === 3) {
+            return "Đang giao";
+        } else if (status === 4) {
+            return "Đã giao";
+        } else {
+            return "Đã hủy";
+        }
+    }
+
+    const orderStatus = {{ orderDetail.orderId.status }};
+    const statusElement = document.getElementById('status').textContent = getStatusString(orderStatus);
+</script>

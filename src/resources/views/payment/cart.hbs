@@ -261,7 +261,7 @@
                         document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
                     }
 
-                    window.location.href = `/accounts/${userId}/order`;
+                    window.location.href = `/order/${userId}`;
                 })
                 .catch(error => {
                     console.error('Đã xảy ra lỗi:', error);
