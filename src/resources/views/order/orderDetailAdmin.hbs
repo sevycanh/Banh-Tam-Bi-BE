@@ -51,6 +51,18 @@
 
     select.addEventListener('change', function () {
         const newStatus = this.value;
-        console.log(`Đã chọn trạng thái mới cho đơn hàng ${orderId}: ${newStatus}`);
+
+        fetch(`/order/manager/${orderId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+        }).then(response => {
+            alert("Cập nhật trạng thái thành công")
+        })
+            .catch(error => {
+                console.error('Đã xảy ra lỗi:', error);
+            });
     });
 </script>

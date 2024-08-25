@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const { multipleMongooseToObject } = require("../util/mongoose");
 
 module.exports = {
   getAddress: (req, res) => {
@@ -47,7 +48,46 @@ module.exports = {
       ", " +
       req.body.street;
     User.findByIdAndUpdate(req.params.id, { address: address })
-      .then(() => res.redirect("/")) 
+      .then(() => res.redirect("/"))
       .catch(() => res.status(500).json("Lỗi cập nhật địa chỉ"));
   },
+
+  getAllUser: (req, res) => {
+    User.find({ isAdmin: false, deleted: false }).then((users) =>
+      res.render("account/user", {
+        users: multipleMongooseToObject(users),
+        data: {
+          isAdmin:
+            req.data && req.data.isAdmin !== undefined ? req.data.isAdmin : -1,
+          id: req.data && req.data.id !== undefined ? req.data.id : -1,
+        },
+      })
+    );
+  },
+
+  deleteUser: (req, res) => {
+    User.delete({ _id: req.params.id })
+      .then(() => res.redirect("back"))
+      .catch(() => res.status(500).json("Lỗi Khóa tài khoản"));
+  },
+
+  getTrashUser: (req, res) => {
+    User.findWithDeleted({ deleted: true })
+      .then((users) =>
+        res.render("account/trash", {
+          data: {
+            isAdmin: true,
+            id: req.data && req.data.id !== undefined ? req.data.id : -1,
+          },
+          users: multipleMongooseToObject(users),
+        })
+      )
+      .catch(() => res.status(500).json("Lỗi lấy danh sách tài khoản đã xóa"));
+  },
+
+  restoreUser: (req, res)=> {
+    User.restore({ _id: req.params.id })
+      .then(() => res.redirect("back"))
+      .catch(() => res.status(500).json("Lỗi restore user"));
+  }
 };

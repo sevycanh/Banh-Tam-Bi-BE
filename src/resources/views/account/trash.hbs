@@ -1,0 +1,52 @@
+<h1>Danh sách tài khoản người dùng</h1>
+<br>
+<a href="/accounts">Danh sách tài khoản hiện tại</a>
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Tên</th>
+            <th scope="col">Số điện thoại</th>
+            <th scope="col">Địa chỉ nhận hàng</th>
+            <th scope="col">Ngày tạo tài khoản</th>
+            <th scope="col">Tùy chọn</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each users}}
+        <tr>
+            <td>{{this._id}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.phone}}</td>
+            <td>{{this.address}}</td>
+            <td>{{this.createdAt}}</td>
+            <td><a href="" class="btn btn-link btn-restore" data-id="{{this._id}}">Khôi phục</a></td>
+        </tr>
+        {{else}}
+        <tr>
+            <td colspan="6" class="text-center">
+                Chưa có tài khoản nào!
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<form name="restore-product-form" method="POST"></form>
+
+<script>
+    var restoreForm = document.forms['restore-product-form'];
+    // Lấy ra tất cả các thẻ <a> có class "btn-restore" trong <div class="mt-4">
+    const btnRestoreLinks = document.querySelectorAll('.mt-4 a.btn-restore');
+
+    // Lặp qua từng thẻ <a> và thêm sự kiện click
+    btnRestoreLinks.forEach(btnRestoreLink => {
+        btnRestoreLink.addEventListener('click', function(event) {
+            event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ <a>
+        const dataId = this.getAttribute('data-id');
+        
+        restoreForm.action = '/accounts/' + dataId + '/restore?_method=PATCH';
+        restoreForm.submit();
+        });
+    });
+</script>

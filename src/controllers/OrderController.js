@@ -156,5 +156,11 @@ module.exports = {
         });
       })
       .catch(() => res.status(500).json("Lỗi lấy chi tiết đơn hàng"));
-  }
+  },
+
+  updateStatus: (req, res) => {
+    Order.findByIdAndUpdate(req.params.id, { status: req.body.status })
+      .then(() => res.redirect("/"))
+      .catch(() => res.status(500).json("Lỗi cập nhật trạng thái đơn hàng"));
+  },
 };

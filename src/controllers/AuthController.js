@@ -44,11 +44,12 @@ module.exports = {
 
   login: async (req, res) => {
     try {
-        const user = await User.findOne({ phone: req.body.phone });
-        !user && res.status(401).json("Wrong Login Details");
+        const user = await User.findOne({ phone: req.body.phone, deleted: false });
 
-
-        const deCryptedPass = CryptoJS.AES.decrypt(
+        if (!user){
+          res.status(401).json("Wrong Login Details")
+        } else {
+          const deCryptedPass = CryptoJS.AES.decrypt(
             user.password,
             process.env.Crypto_SEC
           );
@@ -71,6 +72,8 @@ module.exports = {
         localStorage.setItem('token', userToken)
 
         res.redirect("/")
+        }
+
     } catch (error){
       res.status(500).json("Lỗi login");
     }

@@ -92,7 +92,6 @@ module.exports = {
     User.findOne({ _id: req.data.id })
       .then((user) => {
         if (user._doc.address !== "" || user._doc.isAdmin === true) {
-    
           next();
         } else {
           res.render("account/address", {

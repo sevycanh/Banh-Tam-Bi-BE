@@ -37,7 +37,7 @@
                 <td class="max-width-td">{{this.description}}</td>
                 <td>{{formatPrice this.price}}</td>
                 <td><img src="{{this.image}}" alt="{{this.name}}" style="width: 80px; height: auto;"></td>
-                <td>{{this.categoryId}}</td>
+                <td id="category-{{this._id}}" data-type="{{this.categoryId}}"></td>
                 <td>
                     <a href="/products/{{this._id}}/edit" class="btn btn-link">Sửa</a>
                     {{!-- <a href="" class="btn btn-link" data-bs-toggle="modal" data-id="{{this._id}}"
@@ -70,7 +70,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button id="btn-delete-product" onclick="navigate()" type="button" class="btn btn-danger">Accept</button>
+                <button id="btn-delete-product" onclick="navigate()" type="button"
+                    class="btn btn-danger">Accept</button>
             </div>
         </div>
     </div>
@@ -133,5 +134,27 @@
             stopSellingBtn.classList.add('disabled')
         }
     }
+
+    const categoryCells = document.querySelectorAll('[id^="category-"]');
+    categoryCells.forEach(function (cell) {
+        const categoryId = cell.getAttribute("data-type");
+        let categoryName = "";
+
+        switch (parseInt(categoryId)) {
+            case 1:
+                categoryName = "Món chính";
+                break;
+            case 2:
+                categoryName = "Món phụ";
+                break;
+            case 3:
+                categoryName = "Nước uống";
+                break;
+            default:
+                categoryName = "Không xác định";
+        }
+
+        cell.textContent = categoryName;
+    });
 
 </script>

@@ -51,7 +51,6 @@
 
     document.addEventListener("DOMContentLoaded", function () {
         // Set select status
-
         const selects = document.querySelectorAll('select[data-status]');
 
         selects.forEach(select => {
@@ -74,14 +73,24 @@
 
         // Bắt sự thay đổi mỗi khi thực hiện thay đổi select
         selects.forEach(select => {
-            select.addEventListener('change', function() {
+            select.addEventListener('change', function () {
                 const selectedValue = this.value;
                 const orderId = this.id.replace('select-', '');
 
-                console.log(`Đã thay đổi trạng thái của đơn hàng ${orderId} thành ${selectedValue}`);
+                fetch(`/order/manager/${orderId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: selectedValue })
+                }).then(response => {
+                    alert("Cập nhật trạng thái thành công")
+                })
+                    .catch(error => {
+                        console.error('Đã xảy ra lỗi:', error);
+                    });
             });
         });
-
     });
 
 </script>
