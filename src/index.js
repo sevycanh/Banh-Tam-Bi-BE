@@ -5,7 +5,7 @@ const db = require("./config/database");
 const route = require("./routes/api");
 const methodOverride = require("method-override");
 require("dotenv").config();
-var cookieParser = require('cookie-parser')
+var cookieParser = require("cookie-parser");
 
 //Connect to database
 db.connect();
@@ -20,9 +20,14 @@ app.engine(
     extname: ".hbs",
     helpers: {
       sum: (a, b) => a + b,
-      formatPrice: (price) => price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + 'đ'
+      formatPrice: (price) => {
+        if (price != null) {
+          return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
+        }
+        return "";
+      },
     },
-  }),
+  })
 );
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "resources", "views"));
@@ -40,7 +45,7 @@ app.use(express.json()); //req
 
 app.use(methodOverride("_method"));
 
-app.use(cookieParser())
+app.use(cookieParser());
 
 route(app);
 
