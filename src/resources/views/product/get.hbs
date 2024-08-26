@@ -55,6 +55,9 @@
             {{/each}}
         </tbody>
     </table>
+
+    <div id="pagination"></div>
+    <br>
 </form>
 
 {{!-- Confirm delete product --}}
@@ -156,5 +159,44 @@
 
         cell.textContent = categoryName;
     });
+
+    //paging
+    function getCurrentPageFromQueryString() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = parseInt(urlParams.get('page')) || 1;
+        return Math.max(1, Math.min(page, totalPages));
+    }
+
+    const paginationElement = document.getElementById('pagination');
+    const totalPages = parseInt('{{totalPage}}');
+    const visiblePages = 5;
+    const currentPage = getCurrentPageFromQueryString();
+
+    function createPagination() {
+        paginationElement.innerHTML = '';
+
+        const half = Math.floor(visiblePages / 2);
+
+        const prevPage = Math.max(1, currentPage - 1);
+        const nextPage = Math.min(totalPages, currentPage + 1);
+
+        paginationElement.innerHTML += `<a href="/products?page=${prevPage}" class="page-link${currentPage === 1 ? ' disabled' : ''}">Previous</a>`;
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - half && i <= currentPage + half)) {
+                paginationElement.innerHTML += `<a href="/products?page=${i}" class="page-link${i === currentPage ? ' active' : ''}">${i}</a>`;
+            } else if (i === 2 || i === totalPages - 1) {
+                paginationElement.innerHTML += `<span class="ellipsis">...</span>`;
+            }
+        }
+
+        paginationElement.innerHTML += `<a href="/products?page=${nextPage}" class="page-link${currentPage === totalPages ? ' disabled' : ''}">Next</a>`;
+
+        if (currentPage === totalPages) {
+            document.querySelector('.page-link:last-child').classList.add('disabled');
+        }
+    }
+
+    createPagination();
 
 </script>

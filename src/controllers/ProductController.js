@@ -7,10 +7,17 @@ const {
 module.exports = {
   getAllProduct: async (req, res) => {
     try {
-      const products = await Product.find();
+      const pageSize = 6;
+      const page = req.query.page || 1;
+
+      const skipProducts = (page - 1) * pageSize;
+
+      const products = await Product.find().skip(skipProducts).limit(pageSize);
       const productsSortDeleted = await Product.countDocumentsWithDeleted({
         deleted: true,
       });
+      const totalProduct = await Product.countDocuments({});
+
       res.render("product/get", {
         data: {
           isAdmin: true,
@@ -18,6 +25,8 @@ module.exports = {
         },
         products: multipleMongooseToObject(products),
         productsSortDeleted,
+        totalProducts: totalProduct,
+        totalPage: Math.ceil(totalProduct / pageSize),
       });
     } catch (error) {
       res.status(500).json("Lỗi get all product");
@@ -132,6 +141,28 @@ module.exports = {
         });
       })
       .catch(() => res.status(500).json("Lỗi show thông tin sản phẩm"));
+  },
+
+  searchProduct: (req, res) => {
+    Product.find({
+      name: { $regex: req.params.key, $options: "i" },
+      deleted: false,
+    })
+      .then((products) => {
+        res.render("product/search", {
+          data: {
+            isAdmin:
+              req.data && req.data.isAdmin !== undefined
+                ? req.data.isAdmin
+                : -1,
+            id: req.data && req.data.id !== undefined ? req.data.id : -1,
+          },
+          products: multipleMongooseToObject(products),
+        });
+      })
+      .catch((err) => {
+        res.status(500).json("Lỗi tìm sản phẩm");
+      });
   },
 };
 

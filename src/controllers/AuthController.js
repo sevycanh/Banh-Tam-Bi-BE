@@ -65,7 +65,7 @@ module.exports = {
             },
             process.env.JWT_SEC,
             {
-                expiresIn: 900
+                expiresIn: 3600
             }
         )
 

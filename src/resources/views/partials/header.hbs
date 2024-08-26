@@ -37,8 +37,8 @@
           </ul>
         </li>
       </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+      <form class="d-flex" id="searchForm" role="search">
+        <input class="form-control me-2" id="searchInput" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>
     </div>
@@ -111,4 +111,23 @@
         <li><a class="dropdown-item" href="/auth/register">Đăng ký</a></li>
     `;
   }
+
+  //search
+  const searchForm = document.getElementById('searchForm');
+  searchForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const searchInput = document.getElementById('searchInput');
+    const searchValue = searchInput.value.trim();
+
+    if (searchValue !== '') {
+      fetch(`/products/search/${searchValue}`)
+        .then(response => {
+         window.location.href = `/products/search/${searchValue}`;
+        })
+        .catch(error => {
+          console.error('There was a problem with your fetch operation:', error);
+        });
+    }
+  });
 </script>

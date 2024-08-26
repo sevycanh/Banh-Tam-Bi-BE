@@ -5,6 +5,7 @@ const cartRouter = require('./cart')
 const accountRouter = require('./account')
 const orderRouter = require('./order')
 function route(app){
+
     app.use('/', homeRouter);
     app.use('/auth', authRouter)
 

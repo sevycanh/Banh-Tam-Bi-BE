@@ -24,6 +24,8 @@ router.get("/mon-phu", verifyForHeader, ProductController.getMonPhu)
 router.get("/nuoc-uong",verifyForHeader, ProductController.getNuocUong)
 router.get("/:slug", verifyForHeader, ProductController.showInfoProduct)
 
+router.get("/search/:key", verifyForHeader, ProductController.searchProduct)
+
 router.get("/", verifyAdmin, ProductController.getAllProduct)
 
 module.exports = router;

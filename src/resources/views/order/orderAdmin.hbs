@@ -47,6 +47,10 @@
     </tbody>
 </table>
 
+<div id="alertMessage" class="alert alert-success" style="display: none;">
+    Cập nhật trạng thái đơn hàng thành công
+</div>
+
 <script>
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -84,7 +88,11 @@
                     },
                     body: JSON.stringify({ status: selectedValue })
                 }).then(response => {
-                    alert("Cập nhật trạng thái thành công")
+                    const alertMessage = document.getElementById('alertMessage');
+                    alertMessage.style.display = 'block';
+                    setTimeout(function () {
+                        alertMessage.style.display = 'none';
+                    }, 1500);
                 })
                     .catch(error => {
                         console.error('Đã xảy ra lỗi:', error);

@@ -1,6 +1,6 @@
 <div class="mt-4">
     <div class="mb-3">
-        <h1 id="title-category"></h1>
+        <h1>Danh sách tìm kiếm</h1>
     </div>
     <div class="row">
         {{#each products}}
@@ -19,6 +19,8 @@
                 </div>
             </div>
         </div>
+        {{else}}
+        <p>Không tìm thấy sản phẩm phù hợp</p>
         {{/each}}
     </div>
 </div>
@@ -28,17 +30,6 @@
 </div>
 
 <script>
-    const categoryId = "{{categoryId}}"
-    const title = document.getElementById('title-category')
-
-    if (categoryId === "1") {
-        title.innerHTML = `Món chính`
-    } else if (categoryId === "2") {
-        title.innerHTML = `Món phụ`
-    } else {
-        title.innerHTML = `Nước uống`
-    }
-
     function saveToCookies(productId, price) {
         var quantity = 1;
 
@@ -53,7 +44,7 @@
         }
 
         document.cookie = 'products=' + JSON.stringify(existingProducts) + ';max-age=86400;path=/';
-
+        
         const alertMessage = document.getElementById('alertMessage');
         alertMessage.style.display = 'block';
         setTimeout(function () {
