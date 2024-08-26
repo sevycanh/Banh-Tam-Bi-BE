@@ -3,8 +3,6 @@ Technologies: NodeJS, Express, Handlebars, MongoDB, MiddleWare, JWT.
 ## Screenshots
 <img src="https://github.com/user-attachments/assets/6842c0d9-a99f-4d05-b452-6649171abf12"/>
 <img src="https://github.com/user-attachments/assets/1997bb51-97b0-4b46-b695-c975d7f30be3"/>
-<img src="https://github.com/user-attachments/assets/1ff18eb8-d326-419c-bba4-e4747fc861ae"/>
-<img src="https://github.com/user-attachments/assets/48a57029-73d9-4486-98bd-37bc63c3c6be"/>
 <img src="https://github.com/user-attachments/assets/21ebb790-b680-4d61-a3f0-996f943deb31"/>
 <img src="https://github.com/user-attachments/assets/3fc0b14e-3edd-4a95-a3fe-ac84d5891f31"/>
 <img src="https://github.com/user-attachments/assets/b766e17c-d664-49ee-9030-aaf790565a5c"/>
